@@ -23,3 +23,12 @@ Troubleshooting:
 Notes:
 - This repo includes `next` in `package.json` and standard `dev`/`build` scripts. Vercel will run `next build` automatically.
 - If you want, I can create a GitHub Action to auto-deploy on merge to `main`.
+
+Run locally from VS Code
+
+You can start the dev server from the VS Code UI using the included tasks and launch configs:
+
+- Run the task: Command Palette -> `Tasks: Run Task` -> select `npm: dev` (this runs `npm run dev` in the integrated terminal).
+- Once the server is running, open the Run panel and start `Launch Chrome against localhost` or `Launch Edge against localhost` to open the app.
+
+If you prefer the terminal, `npm install` and `npm run dev` still work as usual.
