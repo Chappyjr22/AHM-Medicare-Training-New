@@ -1,2 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+:root{
+  --bg-1: #0f172a; /* rich navy */
+  --bg-2: linear-gradient(135deg,#0f172a 0%, #0b1220 100%);
+  --card-bg: rgba(255,255,255,0.06);
+  --muted: rgba(255,255,255,0.7);
+  --accent-1: #7c3aed; /* violet */
+  --accent-2: #06b6d4; /* cyan */
+  --accent-3: #f59e0b; /* amber */
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-shadow: 0 10px 30px rgba(2,6,23,0.6);
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 18px;
+  --radius-lg: 18px;
+}
+
+/* Header */
+.site-header{display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:8px}
+.site-logo{height:48px;width:auto;border-radius:8px;background:rgba(255,255,255,0.02);padding:6px;display:inline-block}
+.site-title{font-size:2.4rem;font-weight:800;color:var(--accent-3);margin:0}
+@media (max-width:640px){.site-header{flex-direction:column;gap:8px}.site-title{font-size:1.6rem}}
+
+/* accessible contrast helpers */
+.contrast-outline{box-shadow:0 4px 18px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.06)}
+
+/* subtle bordered gradient for tiles */
+.tile-gradient-border{position:relative;overflow:hidden}
+.tile-gradient-border::after{content:'';position:absolute;inset:0;padding:1px;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));-webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000)}
+
 html,body,#__next{height:100%;}
-body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+body{
+  margin:0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--bg-2);
+  color: white;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Container tweaks */
+.max-w-6xl{max-width:1100px;margin-left:auto;margin-right:auto}
+
+/* Card */
+.card-glass{
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-lg);
+}
+.card-content{padding:var(--space-3)}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;border:0;transition:transform .18s cubic-bezier(.2,.9,.2,1),box-shadow .18s ease,opacity .12s ease;
+  will-change: transform;
+}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.btn-primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white;box-shadow:0 6px 18px rgba(124,58,237,0.18)}
+.btn-yellow{background:linear-gradient(90deg,#fbbf24,#f59e0b);color:#071224;font-weight:700}
+.btn-disabled{opacity:.45;cursor:not-allowed}
+.btn-pill{border-radius:999px;padding-left:16px;padding-right:16px}
+
+/* Quiz submit spacing helper */
+.quiz-submit{display:inline-flex;min-width:96px;padding:10px 14px}
+
+/* Row helper to space out multiple submit rows in modules */
+.quiz-submit-row{flex-direction:row;align-items:center}
+.quiz-submit-row + .quiz-submit-row{margin-top:14px}
+.quiz-submit-row .quiz-submit{min-width:110px}
+
+/* Module tiles */
+.module-tile{border-radius:14px;padding:var(--space-3);color:white;transition:transform .24s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, background .18s ease;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.module-tile:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 18px 50px rgba(2,6,23,0.6)}
+.module-tile .title{margin-top:var(--space-2);font-weight:700}
+
+/* Responsive module grid */
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+@media (max-width:1024px){.module-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.module-grid{grid-template-columns:repeat(1,1fr)}}
+
+.module-tile{min-height:120px;display:flex;flex-direction:column;justify-content:center}
+
+/* Heading styles */
+.h1-gradient{background:linear-gradient(90deg,var(--accent-3),#fff 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h2{font-size:1.6rem;font-weight:700}
+.p-muted{color:rgba(255,255,255,0.85)}
+
+/* Responsive */
+@media (max-width:768px){
+  .max-w-6xl{padding-left:16px;padding-right:16px}
+  .card-content{padding:14px}
+  h1{font-size:1.6rem}
+  .h2{font-size:1.2rem}
+}
+
+/* subtle animations */
+.fade-in{animation:fadeIn .36s ease both}
+.pop-press:active{transform:scale(.98)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Utility */
+.text-small{font-size:0.9rem}
+
+/* make inputs look nicer */
+input[type='radio']{width:18px;height:18px}
+label{cursor:pointer}
+
+/* Knowledge check spacing tweaks */
+fieldset{border:0;margin:0;padding:0}
+fieldset + .mt-3, fieldset + .mt-2{margin-top:12px}
+fieldset[role='radiogroup'] > label{display:block}
+fieldset[role='radiogroup'] > label + label{margin-top:8px}
+
+/* subtle prose */
+.prose{color:rgba(0,0,0,0.75)}
+
+/* Extra: nicer figure */
+figure img{border-radius:12px}
+
+/* Accessibility focus */
+:focus{outline:2px solid rgba(255,255,255,0.06);outline-offset:2px}
