@@ -501,18 +501,18 @@ export default function MedicareTrainingApp(){
                 {/* Knowledge Check */}
                 <section className="mt-6"><h3 className="text-lg font-semibold">Knowledge Check</h3>
                   <p className="mt-2 font-medium">{current.miniQuiz.q}</p>
-                  <fieldset className="mt-3 space-y-2" role="radiogroup" aria-label={`Mini quiz for ${current.title}`}>
+                  <fieldset className="mt-4 space-y-3" role="radiogroup" aria-label={`Mini quiz for ${current.title}`}>
                     <legend className="sr-only">Mini quiz choices</legend>
                     {current.miniQuiz.options.map((opt,i)=>{ const key=`m-${current.id}-0`; const sel=answers[key]??null; const wasSubmitted=submitted[key]??false; const gradedSel = graded[key] ?? null; const canSubmit = sel!==null && !(wasSubmitted && gradedSel===current.miniQuiz.correctIndex); return (
-                      <label key={i} className={`flex items-center gap-2 p-2 rounded-md border ${sel===i?'border-indigo-600':'border-gray-200'}`}>
+                      <label key={i} className={`block flex items-center gap-2 p-2 rounded-md border ${sel===i?'border-indigo-600':'border-gray-200'}`}>
                         <input type="radio" name={`q-${key}`} checked={sel===i} onChange={()=>setAnswers(prev=>({...prev,[key]:i}))}/>
                         <span>{opt}</span>
                       </label>
                     );})}
                   </fieldset>
                   {(()=>{ const key=`m-${current.id}-0`; const sel=answers[key]??null; const wasSubmitted=submitted[key]??false; const gradedSel = graded[key] ?? null; const correct = gradedSel===current.miniQuiz.correctIndex; const disableSubmit = sel===null || (wasSubmitted && correct); return (
-                    <div className="mt-3 flex items-center gap-3">
-                      <Button onClick={()=>handleSubmitQuestion(key, sel as number|null)} disabled={disableSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
+                    <div className="mt-4 flex items-center gap-4 quiz-submit-row">
+                      <Button onClick={()=>handleSubmitQuestion(key, sel as number|null)} disabled={disableSubmit} className="quiz-submit bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
                       {wasSubmitted && (
                         <span className={`text-sm font-semibold ${correct?'text-green-600':'text-red-600'}`} aria-live="polite">{correct?'✅ Correct!':'❌ Not quite. Review above and try again.'}</span>
                       )}
@@ -530,8 +530,8 @@ export default function MedicareTrainingApp(){
                             <input type="radio" name={`q-${key}`} checked={sel===oi} onChange={()=>setAnswers(prev=>({...prev,[key]:oi}))}/> {opt}
                           </label>
                         ))}
-                        <div className="mt-2 flex items-center gap-3">
-                          <Button onClick={()=>handleSubmitQuestion(key, sel as number|null)} disabled={disableSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
+                        <div className="mt-4 flex items-center gap-4 quiz-submit-row">
+                          <Button onClick={()=>handleSubmitQuestion(key, sel as number|null)} disabled={disableSubmit} className="quiz-submit bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
                           {wasSubmitted && (<span className={`text-sm font-semibold ${correct?'text-green-600':'text-red-600'}`}>{correct?'✅ Correct!':'❌ Try again'}</span>)}
                         </div>
                       </div>
