@@ -12,8 +12,8 @@ function cx(...xs: (string | false | null | undefined)[]) {
 const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ className, children, ...rest }) => (
   <button
     className={cx(
-      "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition",
-      "bg-white/10 hover:bg-white/20 text-white disabled:bg-white/10 disabled:opacity-50",
+      "btn",
+      "pop-press",
       className
     )}
     {...rest}
@@ -23,10 +23,10 @@ const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ class
 );
 
 const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, children, ...rest }) => (
-  <div className={cx("rounded-2xl shadow-lg border border-white/10", className)} {...rest}>{children}</div>
+  <div className={cx("card-glass", className)} {...rest}>{children}</div>
 );
 const CardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, children, ...rest }) => (
-  <div className={cx("p-6", className)} {...rest}>{children}</div>
+  <div className={cx("card-content", className)} {...rest}>{children}</div>
 );
 
 const Progress: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
@@ -47,10 +47,10 @@ const Progress: React.FC<{ value: number; className?: string }> = ({ value, clas
  ***********************/
 const QUIZ_FILE_NAME = "Medicare Training Multiple Choice Quiz Modern.pdf";
 const LOGO_FILE_NAME = "AHM logo.png";
-const ASSET_PREFIX = (typeof window !== "undefined" && (window as any).__ASSET_PREFIX__) || "";
-const resolveAsset = (n: string) => `${ASSET_PREFIX}${encodeURI(n.replace(/^.*\//, ""))}`;
-const QUIZ_URL = resolveAsset(QUIZ_FILE_NAME);
-const LOGO_URL = resolveAsset(LOGO_FILE_NAME);
+const resolveAsset = (n: string) => {
+  const prefix = (typeof window !== "undefined" && (window as any).__ASSET_PREFIX__) ? (window as any).__ASSET_PREFIX__ : "";
+  return `${prefix}${encodeURI(n.replace(/^.*\//, ""))}`;
+};
 
 /***********************
  * Types                *
@@ -342,6 +342,19 @@ export default function MedicareTrainingApp(){
     return items;
   },[DATASET]);
 
+  // module gradient palette (one per module index)
+  const MODULE_GRADIENTS = [
+    'linear-gradient(135deg,#7c3aed 0%, #06b6d4 100%)',
+    'linear-gradient(135deg,#10b981 0%, #06b6d4 100%)',
+    'linear-gradient(135deg,#3b82f6 0%, #7c3aed 100%)',
+    'linear-gradient(135deg,#6366f1 0%, #ef4444 100%)',
+    'linear-gradient(135deg,#0ea5a4 0%, #f59e0b 100%)',
+    'linear-gradient(135deg,#f97316 0%, #ef4444 100%)',
+    'linear-gradient(135deg,#8b5cf6 0%, #ef4444 100%)',
+    'linear-gradient(135deg,#ef4444 0%, #f97316 100%)',
+    'linear-gradient(135deg,#f59e0b 0%, #7c3aed 100%)',
+  ];
+
   const [examSelections,setExamSelections]=useState<Record<number,number|null>>({});
   const [examSubmitted,setExamSubmitted]=useState(false);
   const [examScore,setExamScore]=useState(0);
@@ -400,7 +413,13 @@ export default function MedicareTrainingApp(){
 
   const resetExam=useCallback(()=>{ setExamSelections({}); setExamSubmitted(false); setExamScore(0); setStep('exam'); },[]);
 
-  useEffect(()=>()=>{ if(confettiTimeout) window.clearTimeout(confettiTimeout); },[confettiTimeout]);
+  useEffect(()=>{
+    return ()=>{
+      if (confettiTimeout !== null) {
+        window.clearTimeout(confettiTimeout);
+      }
+    };
+  },[confettiTimeout]);
 
   // Handlers for knowledge check submit (per-question)
   const handleSubmitQuestion = useCallback((key: string, value: number | null = null) => {
@@ -412,25 +431,35 @@ export default function MedicareTrainingApp(){
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-sans">
       {showConfetti && <ConfettiBurst/>}
-      <div className="max-w-6xl mx-auto p-6 md:p-10">
-        <div className="flex items-center justify-center mb-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={LOGO_URL} alt="American Health Marketplace" className="h-10 w-auto rounded bg-white/20 p-1"/>
-        </div>
+      <div className="max-w-6xl mx-auto p-6 md:p-10 fade-in">
+        <header className="site-header" style={{justifyContent:'center'}}>
+          <h1 className="site-title">American Health Marketplace</h1>
+        </header>
         <AnimatePresence mode="wait">
           {step==='welcome' && (
             <motion.section key="welcome">
-              <h1 className="text-5xl font-bold text-center mb-6"><Sparkles className="inline w-10 h-10 text-yellow-300"/> Welcome to the Medicare Training Program!</h1>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+              <h1 className="text-5xl font-bold text-center mb-6 h1-gradient"><Sparkles className="inline w-10 h-10 text-yellow-300"/> Welcome to the Medicare Training Program!</h1>
+              <div className="max-w-4xl mx-auto" style={{marginBottom: '40px'}}>
+                <Card className="card-glass">
+                  <CardContent>
+                    <h3 className="h2">Program Overview</h3>
+                    <p className="p-muted mt-2">This interactive training introduces Medicare, its parts, costs, eligibility, and supplemental coverage options. Participants will learn through modules, objectives, real-world scenarios, and quizzes with instant feedback.</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="module-grid" style={{marginTop: '28px'}}>
                 {DATASET.map((m,i)=>(
-                  <button key={m.id} onClick={()=>openModule(i)} className={cx(m.color,"rounded-2xl p-6 text-center text-white font-bold text-lg hover:scale-[1.02] transition")}>
-                    {m.icon ?? <Layers className="w-8 h-8"/>}
-                    <span className="mt-3 block">{m.title}</span>
+                  <button key={m.id} onClick={()=>openModule(i)} className={cx('module-tile','tile-gradient-border','pop-press')} style={{background: MODULE_GRADIENTS[i % MODULE_GRADIENTS.length]}}>
+                    <div style={{width:56,height:56,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:12,background:'rgba(255,255,255,0.06)'}}>
+                      {m.icon ?? <Layers className="w-6 h-6"/>}
+                    </div>
+                    <span className="mt-3 block title">{m.title}</span>
                   </button>
                 ))}
               </div>
               <div className="text-center mt-12">
-                <Button onClick={startTraining} className="bg-yellow-400 text-black">🚀 Let’s Dive In!</Button>
+                <Button onClick={startTraining} className="btn-yellow btn-pill">🚀 Let’s Dive In!</Button>
               </div>
             </motion.section>
           )}
@@ -438,8 +467,8 @@ export default function MedicareTrainingApp(){
           {step==='module' && current && (
             <motion.section key="module">
               <div className="flex items-center gap-3 mb-4">
-                <Button onClick={()=>setStep('welcome')} className="bg-white/20 text-white"><Home className="w-4 h-4 mr-2"/> Home</Button>
-                <span className="flex-1 text-sm">Module {index+1} of {DATASET.length}</span>
+                <Button onClick={()=>setStep('welcome')} className="btn-ghost"><Home className="w-4 h-4 mr-2"/> Home</Button>
+                <span className="flex-1 text-small">Module {index+1} of {DATASET.length}</span>
               </div>
               <Progress value={progress} className="h-2"/>
               <Card className="mt-6 bg-white text-gray-900"><CardContent>
@@ -511,8 +540,8 @@ export default function MedicareTrainingApp(){
                 )}
 
                 <footer className="mt-8 flex justify-between items-center">
-                  <Button onClick={prev}><ArrowLeft className="w-4 h-4 mr-2"/> Previous</Button>
-                  <Button onClick={next} disabled={!canProceed} className={`text-white ${canProceed?'bg-indigo-600 hover:bg-indigo-700':'bg-gray-300 cursor-not-allowed'}`}>
+                  <Button onClick={prev} className="btn-ghost"><ArrowLeft className="w-4 h-4 mr-2"/> Previous</Button>
+                  <Button onClick={next} disabled={!canProceed} className={cx(canProceed? 'btn-primary':'btn btn-disabled') }>
                     {index===DATASET.length-1?'Begin Final Exam':<>Next <ArrowRight className="w-4 h-4 ml-2"/></>}
                   </Button>
                 </footer>
@@ -547,8 +576,8 @@ export default function MedicareTrainingApp(){
                   );})}
                 </div>
                 <div className="mt-6 flex items-center gap-3">
-                  <Button className={`text-white ${examAllAnswered?'bg-indigo-600 hover:bg-indigo-700':'bg-gray-300 cursor-not-allowed'}`} disabled={!examAllAnswered} onClick={submitExam}>Submit Exam</Button>
-                  <a href={QUIZ_URL} target="_blank" rel="noreferrer"><Button className="bg-yellow-400 text-black">Open Printable Quiz</Button></a>
+                  <Button className={cx(examAllAnswered? 'btn-primary' : 'btn btn-disabled')} disabled={!examAllAnswered} onClick={submitExam}>Submit Exam</Button>
+                  <a href={resolveAsset(QUIZ_FILE_NAME)} target="_blank" rel="noreferrer"><Button className="btn-yellow">Open Printable Quiz</Button></a>
                 </div>
               </CardContent></Card>
             </motion.section>
@@ -560,8 +589,8 @@ export default function MedicareTrainingApp(){
               <h2 className="text-4xl font-bold">Final Exam Results</h2>
               <p className="mt-2 text-white/90">Score: <span className="font-bold">{Math.round(examScore*100)}%</span> — {examScore>=PASS_THRESHOLD?'Passed ✅':'Try Again ❌'}</p>
               <div className="mt-6 flex items-center justify-center gap-3">
-                <Button onClick={()=>{setStep('welcome'); setIndex(0);}} className="bg-white/20 text-white">Back to Home</Button>
-                <Button onClick={resetExam} className="bg-indigo-600 text-white">Retake Exam</Button>
+                <Button onClick={()=>{setStep('welcome'); setIndex(0);}} className="btn-ghost">Back to Home</Button>
+                <Button onClick={resetExam} className="btn-primary">Retake Exam</Button>
               </div>
               {examSubmitted && (
                 <Card className="mt-8 bg-white text-gray-900 text-left max-w-4xl mx-auto"><CardContent>
@@ -576,7 +605,7 @@ export default function MedicareTrainingApp(){
                       </div>
                     );})}
                   </div>
-                  <div className="mt-6"><a href={QUIZ_URL} target="_blank" rel="noreferrer"><Button className="bg-yellow-400 text-black">Open Printable Quiz</Button></a></div>
+                  <div className="mt-6"><a href={resolveAsset(QUIZ_FILE_NAME)} target="_blank" rel="noreferrer"><Button className="bg-yellow-400 text-black">Open Printable Quiz</Button></a></div>
                 </CardContent></Card>
               )}
             </motion.section>
