@@ -403,9 +403,10 @@ export default function MedicareTrainingApp(){
   useEffect(()=>()=>{ if(confettiTimeout) window.clearTimeout(confettiTimeout); },[confettiTimeout]);
 
   // Handlers for knowledge check submit (per-question)
-  const handleSubmitQuestion = useCallback((key: string) => {
-    setSubmitted(prev => ({ ...prev, [key]: true }));
-    setGraded(prev => ({ ...prev, [key]: (answers[key] ?? null) }));
+  const handleSubmitQuestion = useCallback((key: string, value: number | null = null) => {
+    const val = value !== null ? value : (answers[key] ?? null);
+    setSubmitted((prev: Record<string, boolean>) => ({ ...prev, [key]: true }));
+    setGraded((prev: Record<string, number | null>) => ({ ...prev, [key]: val }));
   }, [answers]);
 
   return (
@@ -482,7 +483,7 @@ export default function MedicareTrainingApp(){
                   </fieldset>
                   {(()=>{ const key=`m-${current.id}-0`; const sel=answers[key]??null; const wasSubmitted=submitted[key]??false; const gradedSel = graded[key] ?? null; const correct = gradedSel===current.miniQuiz.correctIndex; const disableSubmit = sel===null || (wasSubmitted && correct); return (
                     <div className="mt-3 flex items-center gap-3">
-                      <Button onClick={()=>handleSubmitQuestion(key)} disabled={disableSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
+                      <Button onClick={()=>handleSubmitQuestion(key, sel as number|null)} disabled={disableSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
                       {wasSubmitted && (
                         <span className={`text-sm font-semibold ${correct?'text-green-600':'text-red-600'}`} aria-live="polite">{correct?'✅ Correct!':'❌ Not quite. Review above and try again.'}</span>
                       )}
@@ -501,7 +502,7 @@ export default function MedicareTrainingApp(){
                           </label>
                         ))}
                         <div className="mt-2 flex items-center gap-3">
-                          <Button onClick={()=>handleSubmitQuestion(key)} disabled={disableSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
+                          <Button onClick={()=>handleSubmitQuestion(key, sel as number|null)} disabled={disableSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white">{wasSubmitted? (correct? 'Submitted' : 'Resubmit') : 'Submit'}</Button>
                           {wasSubmitted && (<span className={`text-sm font-semibold ${correct?'text-green-600':'text-red-600'}`}>{correct?'✅ Correct!':'❌ Try again'}</span>)}
                         </div>
                       </div>
@@ -537,7 +538,7 @@ export default function MedicareTrainingApp(){
                       <div className="mt-2 space-y-2">
                         {item.options.map((opt,oi)=>(
                           <label key={oi} className={`flex items-center gap-2 p-2 rounded-md border ${sel===oi?'border-indigo-600':'border-gray-200'}`}>
-                            <input type="radio" name={`exam-${i}`} checked={sel===oi} onChange={()=>setExamSelections({...examSelections,[i]:oi})}/>
+                            <input type="radio" name={`exam-${i}`} checked={sel===oi} onChange={()=>setExamSelections((prev: Record<number, number | null>)=>({...prev,[i]:oi}))}/>
                             <span>{opt}</span>
                           </label>
                         ))}
@@ -546,7 +547,7 @@ export default function MedicareTrainingApp(){
                   );})}
                 </div>
                 <div className="mt-6 flex items-center gap-3">
-                  <Button className={`text-white ${Object.keys(examSelections).length===FINAL_EXAM.length?'bg-indigo-600 hover:bg-indigo-700':'bg-gray-300 cursor-not-allowed'}`} disabled={Object.keys(examSelections).length!==FINAL_EXAM.length} onClick={submitExam}>Submit Exam</Button>
+                  <Button className={`text-white ${examAllAnswered?'bg-indigo-600 hover:bg-indigo-700':'bg-gray-300 cursor-not-allowed'}`} disabled={!examAllAnswered} onClick={submitExam}>Submit Exam</Button>
                   <a href={QUIZ_URL} target="_blank" rel="noreferrer"><Button className="bg-yellow-400 text-black">Open Printable Quiz</Button></a>
                 </div>
               </CardContent></Card>
@@ -566,11 +567,11 @@ export default function MedicareTrainingApp(){
                 <Card className="mt-8 bg-white text-gray-900 text-left max-w-4xl mx-auto"><CardContent>
                   <h3 className="text-xl font-bold mb-4">Review</h3>
                   <div className="space-y-4">
-                    {FINAL_EXAM.map((item,i)=>{ const sel=examSelections[i]!; const correct=sel===item.correctIndex; if(correct) return null; return (
+                    {FINAL_EXAM.map((item,i)=>{ const sel = (examSelections[i] ?? null) as number | null; const correct = sel === item.correctIndex; if(correct) return null; return (
                       <div key={i} className="border rounded-xl p-4">
                         <div className="text-sm text-gray-600 mb-1">{item.moduleTitle}</div>
                         <p className="font-medium">{i+1}. {item.q}</p>
-                        <p className="mt-2"><span className="font-semibold">Your answer:</span> {item.options[sel]??'(blank)'}</p>
+                        <p className="mt-2"><span className="font-semibold">Your answer:</span> {item.options[sel as number]??'(blank)'}</p>
                         <p className="mt-1 text-green-700"><span className="font-semibold">Correct answer:</span> {item.options[item.correctIndex]}</p>
                       </div>
                     );})}
