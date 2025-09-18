@@ -62,6 +62,14 @@ body{
 .btn-disabled{opacity:.45;cursor:not-allowed}
 .btn-pill{border-radius:999px;padding-left:16px;padding-right:16px}
 
+/* Quiz submit spacing helper */
+.quiz-submit{display:inline-flex;min-width:96px;padding:10px 14px}
+
+/* Row helper to space out multiple submit rows in modules */
+.quiz-submit-row{flex-direction:row;align-items:center}
+.quiz-submit-row + .quiz-submit-row{margin-top:14px}
+.quiz-submit-row .quiz-submit{min-width:110px}
+
 /* Module tiles */
 .module-tile{border-radius:14px;padding:var(--space-3);color:white;transition:transform .24s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, background .18s ease;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .module-tile:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 18px 50px rgba(2,6,23,0.6)}
@@ -99,6 +107,12 @@ body{
 /* make inputs look nicer */
 input[type='radio']{width:18px;height:18px}
 label{cursor:pointer}
+
+/* Knowledge check spacing tweaks */
+fieldset{border:0;margin:0;padding:0}
+fieldset + .mt-3, fieldset + .mt-2{margin-top:12px}
+fieldset[role='radiogroup'] > label{display:block}
+fieldset[role='radiogroup'] > label + label{margin-top:8px}
 
 /* subtle prose */
 .prose{color:rgba(0,0,0,0.75)}
